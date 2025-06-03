@@ -14,13 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const prisma_1 = __importDefault(require("../prisma"));
-const nanoid_1 = require("nanoid");
+const referral_codes_1 = __importDefault(require("referral-codes"));
 class UserController {
     createUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { name, email, password, referralCode: inputReferralCode, } = req.body;
-                const generatedReferralCode = (0, nanoid_1.nanoid)(8);
+                const generatedReferralCode = referral_codes_1.default.generate({
+                    length: 8,
+                    count: 1,
+                });
                 const referredByUser = inputReferralCode
                     ? yield prisma_1.default.user.findUnique({
                         where: { referralCode: inputReferralCode },
@@ -31,7 +34,7 @@ class UserController {
                         name,
                         email,
                         password,
-                        referralCode: generatedReferralCode,
+                        referralCode: generatedReferralCode[0],
                         referredBy: (referredByUser === null || referredByUser === void 0 ? void 0 : referredByUser.referralCode) || null,
                     },
                 });

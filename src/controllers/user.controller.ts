@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../prisma";
-import { nanoid } from "nanoid";
+import referralCodes from "referral-codes";
 
 export class UserController {
   async createUser(req: Request, res: Response) {
@@ -12,7 +12,10 @@ export class UserController {
         referralCode: inputReferralCode,
       } = req.body;
 
-      const generatedReferralCode = nanoid(8);
+      const generatedReferralCode = referralCodes.generate({
+        length: 8,
+        count: 1,
+      });
 
       const referredByUser = inputReferralCode
         ? await prisma.user.findUnique({
@@ -25,7 +28,7 @@ export class UserController {
           name,
           email,
           password,
-          referralCode: generatedReferralCode,
+          referralCode: generatedReferralCode[0],
           referredBy: referredByUser?.referralCode || null,
         },
       });

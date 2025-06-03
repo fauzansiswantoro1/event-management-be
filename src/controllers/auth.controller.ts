@@ -1,12 +1,12 @@
 import { compare, genSalt, hash } from "bcrypt";
 import { Request, Response } from "express";
 import prisma from "../prisma";
-import { nanoid } from "nanoid";
 import { sign } from "jsonwebtoken";
 import path from "path";
 import fs from "fs";
 import handlebars from "handlebars";
 import { tranporter } from "../helpers/mailer";
+import referralCodes from "referral-codes";
 
 export class AuthController {
   async register(req: Request, res: Response) {
@@ -18,7 +18,10 @@ export class AuthController {
         referralCode: inputReferralCode,
       } = req.body;
 
-      const generatedReferralCode = nanoid(8);
+      const generatedReferralCode = referralCodes.generate({
+        length: 8,
+        count: 1,
+      });
       const salt = await genSalt(10);
       const hashPass = await hash(password, salt);
 
@@ -33,7 +36,7 @@ export class AuthController {
           name,
           email,
           password: hashPass,
-          referralCode: generatedReferralCode,
+          referralCode: generatedReferralCode[0],
           referredBy: referredByUser?.referralCode || null,
         },
       });

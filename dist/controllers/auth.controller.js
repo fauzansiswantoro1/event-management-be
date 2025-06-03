@@ -15,18 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const bcrypt_1 = require("bcrypt");
 const prisma_1 = __importDefault(require("../prisma"));
-const nanoid_1 = require("nanoid");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const handlebars_1 = __importDefault(require("handlebars"));
 const mailer_1 = require("../helpers/mailer");
+const referral_codes_1 = __importDefault(require("referral-codes"));
 class AuthController {
     register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { name, email, password, referralCode: inputReferralCode, } = req.body;
-                const generatedReferralCode = (0, nanoid_1.nanoid)(8);
+                const generatedReferralCode = referral_codes_1.default.generate({
+                    length: 8,
+                    count: 1,
+                });
                 const salt = yield (0, bcrypt_1.genSalt)(10);
                 const hashPass = yield (0, bcrypt_1.hash)(password, salt);
                 const referredByUser = inputReferralCode
@@ -39,7 +42,7 @@ class AuthController {
                         name,
                         email,
                         password: hashPass,
-                        referralCode: generatedReferralCode,
+                        referralCode: generatedReferralCode[0],
                         referredBy: (referredByUser === null || referredByUser === void 0 ? void 0 : referredByUser.referralCode) || null,
                     },
                 });
