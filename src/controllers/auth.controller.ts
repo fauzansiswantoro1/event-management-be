@@ -63,7 +63,7 @@ export class AuthController {
       const compiledTemplate = handlebars.compile(templateSource);
       const html = compiledTemplate({
         name: newUser.name,
-        link: `https://event-management-fe-alpha.vercel.app/${token}`,
+        link: `https://event-management-fe-alpha.vercel.app/verify/${token}`,
       });
 
       await tranporter.sendMail({
