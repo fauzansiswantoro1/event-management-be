@@ -64,7 +64,7 @@ class AuthController {
                 const compiledTemplate = handlebars_1.default.compile(templateSource);
                 const html = compiledTemplate({
                     name: newUser.name,
-                    link: `http://localhost:3000/verify/${token}`,
+                    link: `https://event-management-fe-alpha.vercel.app/${token}`,
                 });
                 yield mailer_1.tranporter.sendMail({
                     from: process.env.GMAIL_USER,
